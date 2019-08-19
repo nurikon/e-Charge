@@ -62,7 +62,7 @@ openLocation(){
 //*******************************COMPONENT WİLL MOUNT************************************** */
 
 
-  componentDidMount(){
+componentWillMount(){
 
     //mapscreenden gelirken stationId ve imagesLenght getiriyoruz ona göre firebasedenistekte bulunacağız
     const stationId = this.props.navigation.getParam('stationId');
@@ -76,10 +76,10 @@ openLocation(){
       })
     })
 
-    //firebase storage dan istasyon resimlerini getiriyoruz  
-    for(var i=1; i<=imagesLenght; i++)
+    //firebase storage dan istasyon resimlerini getiriyoruz 
+    for(i=0; i<imagesLenght; i++)
       {
-        const index= (i-1).toString()
+        const index= i.toString()
         firebase.storage().ref(stationId).child(index).getDownloadURL().then((Response) => {
           const image = Response
           const newArray= this.state.storeImg.concat(image)
@@ -88,10 +88,9 @@ openLocation(){
         console.log(error)
         });
       }
-
   }
 
-  
+
 
 //***************************************************************************************** */
 //*******************************************RENDER**************************************** */

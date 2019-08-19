@@ -17,7 +17,8 @@ class LocationContainer extends Component {
         mapcontainer,
         map, 
         locationContainer, 
-        adressText,  
+        adressText,
+        distanceText,  
       }=styles
 
 
@@ -40,7 +41,20 @@ class LocationContainer extends Component {
                 </MapView>
             
             </TouchableOpacity>
-            <Text style={adressText}>{this.props.adress}</Text>
+
+            <View 
+            style={{alignItems:'center'}}
+            >
+                <Text style={adressText}>{this.props.adress}</Text>
+                {
+                    this.props.distanceContainer?
+                    <Text style={distanceText}>{this.props.distanceValue} km</Text>
+                    : null
+                }
+                
+
+            </View>
+            
 
         </View>
 
@@ -56,6 +70,14 @@ const styles = StyleSheet.create({
     adressText:{
         textAlign:'center',
         width:width/2.06, 
+        borderBottomWidth:0.5, 
+        borderColor:'gray', 
+        borderRadius:3, 
+        padding:width/58.71
+    },
+    distanceText:{
+        width:width/4.11,
+        textAlign:'center', 
         borderBottomWidth:0.5, 
         borderColor:'gray', 
         borderRadius:3, 

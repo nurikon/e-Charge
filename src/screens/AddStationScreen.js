@@ -215,7 +215,7 @@ export class AddStationScreen extends Component {
         <ImageContainer
           images={images}
           isButtonVisible={true}
-          onPress={()=> this.setState({popVisible:true})}
+          onPressButton={()=> this.setState({popVisible:true})}
         />
 
         <View style={textInputContainer}>

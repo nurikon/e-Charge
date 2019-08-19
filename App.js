@@ -9,6 +9,7 @@ import MapScreen from './src/screens/MapScreen';
 import StationScreen from './src/screens/StationScreen';
 import AddStationScreen from './src/screens/AddStationScreen';
 import SettingScreen from './src/screens/SettingScreen';
+import ListScreen from './src/screens/ListScreen';
 import Icon from 'react-native-vector-icons/EvilIcons';
 
 //width: 411.42857142857144        height: 731.4285714285714  
@@ -18,9 +19,11 @@ const { width, height} = Dimensions.get('window');
 
 const DashboardStackNavigator = createStackNavigator(
   {
+    //StationListScreen:{screen: StationListScreen},
     MapScreen: { screen: MapScreen},
     StationScreen:{screen: StationScreen},
     AddStationScreen:{screen: AddStationScreen},
+    ListScreen:{screen: ListScreen}
   },
   {
     defaultNavigationOptions: ({ navigation }) => {

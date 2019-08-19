@@ -4,58 +4,89 @@ import {
   StyleSheet, 
   Text, 
   TouchableOpacity, 
-  Dimensions 
+  Dimensions,
 } from 'react-native';
 import * as firebase from 'firebase';
+import * as geolib from 'geolib'
 import MapView, {Marker} from 'react-native-maps';
 import RightIcon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MarkerIcon from 'react-native-vector-icons/FontAwesome5';
 
 
-const { width, height} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 
 class MapScreen extends Component {
   state={
     markerIcon:'',
     stations:[],
-    region: {
+    myLocation: {
       latitude:'',
-      longitude: '',
-      latitudeDelta:'',
-      longitudeDelta:''
+      longitude: ''
     }, 
   }
 
-  static navigationOptions = {
-    headerTitle: 'e Şarj',
-    headerStyle:{ backgroundColor: '#1273de'},
-    headerRight: (
-      <RightIcon 
-        onPress={() => alert('This is a button!')}
-        style={{marginRight:width*0.025}}
-        name="ios-list-box" 
-        size={width*0.085}
-        color="white"
-      />
+  static navigationOptions = ({ navigation }) => {
+    return {
+      headerTitle: 'e Şarj',
+      headerStyle:{ backgroundColor: '#1273de'},
+      headerRight: (
+        <RightIcon 
+          onPress={navigation.getParam('goToListScreen')}
+          style={{marginRight:width*0.025}}
+          name="ios-list-box" 
+          size={width*0.085}
+          color="white"
+        />
+      )
+    }
+  }
+
+
+  _goToListScreen=()=>{
+    const myLocation= this.state.myLocation
+    const stations=this.state.stations
+    //istasyonlar yakından uzağa sıralanıyor
+    const orderStations= geolib.orderByDistance(myLocation, stations);
+   
+    //en yakın 7 istasyonu alıyoruz.
+    let firstTenStation = []
+    if(orderStations.length<10){
+      for(i=0; i<orderStations.length; i++ ){
+        firstTenStation.push(orderStations[i])
+      }
+    }else{
+      for(i=0; i<10; i++ ){
+        firstTenStation.push(orderStations[i])
+      }
+    }
+
+    this.props.navigation.navigate(
+      'ListScreen',
+      {
+        firstTenStation,
+        myLocation
+      }
     )
   }
 
 //***************************************************************************************** */
 //*******************************COMPONENT DİD MOUNT************************************** *
 
-  componentDidMount() {
+  componentWillMount() {
+
+    //marker iconları için uri alınıyor
+    MarkerIcon.getImageSource('charging-station', width*0.075, 'green')
+    .then((source)=>   
+      this.setState({ markerIcon: source.uri })
+    );
+    
     //cihazın mevcut konumu alınıyor.
-    navigator.geolocation.getCurrentPosition(
-      (position) => {  
+    navigator.geolocation.getCurrentPosition((position) => {  
         const {latitude, longitude}= position.coords
         this.setState({
-          region: {
-            latitude,
-            longitude,
-            latitudeDelta:0.2,
-            longitudeDelta:0.2}
+          myLocation: { latitude, longitude }
           })
         },
       (error) => {//konuma erişemezse error çalışır
@@ -63,16 +94,15 @@ class MapScreen extends Component {
       }
     );
 
-    //marker iconları için uri alınıyor
-    MarkerIcon.getImageSource('charging-station', width*0.075, 'green')
-    .then((source)=>   
-      this.setState({ markerIcon: source.uri })
-    );
-
-    //firebase database'den tüm istasyonların json arrayi geliyor
+    //firebase database'den tüm istasyonların json arrayi geliyor.
     firebase.database().ref('stationList').once('value').then(snapshot => {
-      this.setState({stations:Object.values(snapshot.val())})
+      const stations=Object.values(snapshot.val())
+      this.setState({stations})
     })
+
+    //headerRight butonuyla bir fonksiyon çalıştırmak için 
+    //getParam ile header dan buraya set param ile buradan fonksiyona yönlendirme yapıyoruz.
+    this.props.navigation.setParams({ goToListScreen: this._goToListScreen});
   }
 
 //***************************************************************************************** */
@@ -81,10 +111,11 @@ class MapScreen extends Component {
 
   render() {
     const {markerIcon, stations }= this.state
-    const {latitude, longitude, longitudeDelta, latitudeDelta } = this.state.region
+    const {latitude, longitude} = this.state.myLocation
     const {myLocationSet, addStationIcon}= styles
 
     return (
+      
       <View style={{ flex: 1 }}>
         <MapView
           style={styles.map}
@@ -93,8 +124,8 @@ class MapScreen extends Component {
           region={{  //region; map açılış anı için merkez nokta değerleri
             latitude:Number(latitude),
             longitude:Number(longitude),
-            latitudeDelta:Number(latitudeDelta), //delta haritaya zoom yapma değeri
-            longitudeDelta:Number(longitudeDelta),
+            latitudeDelta:0.2, //delta haritaya zoom yapma değeri
+            longitudeDelta:0.2
           }}
         >
 
@@ -131,11 +162,9 @@ class MapScreen extends Component {
 
         <TouchableOpacity
             onPress={()=> this.setState({
-              region: {
+              myLocation: {
                 latitude,
                 longitude,
-                latitudeDelta,
-                longitudeDelta
               }
               })
             }

@@ -1,23 +1,36 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions } from 'react-native';
+import { View, TouchableOpacity, ScrollView, Image, StyleSheet, Dimensions, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ImageView from 'react-native-image-view';
 
-const { width} = Dimensions.get('window');
+const { width, height} = Dimensions.get('window');
 
 class ImageContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        isButtonVisible:''
+        isButtonVisible:'',
+        imageIndex:null,
+        isImageVisible:false
     };
   }
 
-  componentDidMount(){
+
+  componentWillMount(){
     this.setState({isButtonVisible:this.props.isButtonVisible})
+    
   }
 
   render() {
+    
+    const propImage= this.props.images[this.state.imageIndex]
     const {imageScrollView, imageContainer}=styles
+    const images = [{
+          source: { uri: propImage},
+          title: 'Paris',
+          width: width* 3/4,
+          height: height* 3/4,
+        }];
 
     return (
 
@@ -27,22 +40,32 @@ class ImageContainer extends Component {
                     //istasyon verilerinin içinde olduğu marker arrayini mapliyoruz.
                     this.props.images.map((image, i) =>{
                         return(
-                            <TouchableOpacity  key={i} style={imageContainer}>
-                                <Image style={{flex:1}} source={{ uri:image }} />
-                            </TouchableOpacity>
+                          <TouchableOpacity 
+                            onPress={()=> this.setState({imageIndex: i, isImageVisible:true })} 
+                            key={i} 
+                            style={imageContainer}
+                            >
+                            <Image style={{flex:1}} source={{ uri:image }} />
+                          </TouchableOpacity>
                         )
                     })
                 }
                 {this.state.isButtonVisible ?
                     <TouchableOpacity 
                             style={[{justifyContent: 'center', alignItems:'center',}, imageContainer ]} 
-                            onPress={this.props.onPress}
+                            onPress={this.props.onPressButton}
                         >
                         <Icon name="add-a-photo" size={width/8.22} color="#1273de"/>
                     </TouchableOpacity>
                 : null
                 }
             </ScrollView>
+
+            <ImageView //
+            images={images}
+            isVisible={this.state.isImageVisible}
+            />
+
         </View> 
     );
   }
