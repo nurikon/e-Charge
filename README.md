@@ -14,6 +14,8 @@ elektrikli araç sürücleri ve e. şarj istasyonları arasında bağ kurması i
 - istasyonu bir navigasyon da açıp rota oluşturabilme
 - yeni bir istasyon ekleyebilme
 
+[Uygulama Apk dosyası](https://drive.google.com/open?id=1TrASMszbpevul5BJNrAgadvmZGK141kY)
+
 ## Uygulamadan ekran görüntüleri
 
 
@@ -42,3 +44,6 @@ elektrikli araç sürücleri ve e. şarj istasyonları arasında bağ kurması i
 > istasyon ekleme ekranı
 
 ![Screenshot_20190816-122039](https://user-images.githubusercontent.com/44235071/63260194-f39cef80-c288-11e9-8b23-3a49a2c05351.png)
+
+
+
